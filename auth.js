@@ -158,7 +158,7 @@ class AuthManager {
 
         return `
             <div class="relative">
-                <div id="userInfo" class="flex items-center space-x-2 bg-white bg-opacity-15 rounded-full px-3 py-2 backdrop-blur-sm cursor-pointer hover:bg-opacity-20 transition-all duration-200" onclick="toggleUserDropdown()">
+                <div id="userInfo" class="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg px-4 py-2 backdrop-blur-sm cursor-pointer transition-all duration-200" onclick="toggleUserDropdown()">
                     <div class="w-7 h-7 bg-white bg-opacity-25 rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white text-xs"></i>
                     </div>
