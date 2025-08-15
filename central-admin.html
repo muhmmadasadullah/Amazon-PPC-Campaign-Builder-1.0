@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Admin Dashboard - Amazon PPC Tools</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 25%, #7c3aed 50%, #be185d 75%, #dc2626 100%);
+            min-height: 100vh;
+            animation: gradientShift 10s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .admin-card {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+        }
+        
+        .tool-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .tool-card:hover::before {
+            left: 100%;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tool-card.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            transform: translateY(-4px);
+        }
+        
+        .user-management-section {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .user-management-section.show {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.05;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .shape-1 { top: 10%; left: 10%; animation-delay: 0s; }
+        .shape-2 { top: 20%; right: 15%; animation-delay: 2s; }
+        .shape-3 { bottom: 20%; left: 20%; animation-delay: 4s; }
+        .shape-4 { top: 60%; right: 25%; animation-delay: 6s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .access-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 2px;
+        }
+        
+        .access-badge.v1 {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .access-badge.v2 {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+        }
+        
+        .access-badge.none {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 relative">
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+        <div class="shape shape-1">
+            <i class="fas fa-cogs text-8xl text-white"></i>
+        </div>
+        <div class="shape shape-2">
+            <i class="fas fa-chart-line text-6xl text-white"></i>
+        </div>
+        <div class="shape shape-3">
+            <i class="fas fa-users text-7xl text-white"></i>
+        </div>
+        <div class="shape shape-4">
+            <i class="fas fa-shield-alt text-5xl text-white"></i>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="max-w-7xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="admin-card p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2 flex items-center">
+                        <i class="fas fa-crown text-yellow-500 mr-4"></i>
+                        Central Admin Dashboard
+                    </h1>
+                    <p class="text-gray-600 text-lg">Manage access to all Amazon PPC Campaign Builder tools</p>
+                </div>
+                <div class="text-right">
+                    <div class="stats-card rounded-lg p-4 text-white">
+                        <div class="text-2xl font-bold" id="totalUsers">4</div>
+                        <div class="text-sm opacity-75">Total Users</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Authentication -->
+            <div id="adminAuth" class="mb-6">
+                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shield-alt text-yellow-500 text-2xl mr-3"></i>
+                        <div>
+                            <h3 class="font-bold text-yellow-800 text-lg">Master Admin Authentication</h3>
+                            <p class="text-yellow-700 text-sm">Enter the master admin password to access the central dashboard</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <input type="password" id="masterAdminPassword" placeholder="Master Admin Password" 
+                               class="flex-1 px-4 py-3 border-2 border-yellow-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white">
+                        <button onclick="authenticateMasterAdmin()" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
+                            <i class="fas fa-key mr-2"></i>Authenticate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content (Hidden by default) -->
+        <div id="dashboardContent" class="hidden space-y-8">
+            <!-- Tool Selection -->
+            <div class="admin-card p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-tools text-blue-500 mr-3"></i>
+                    Select Tool to Manage
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="toolsGrid">
+                    <!-- Tool cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div id="userManagementSection" class="user-management-section">
+                <div class="admin-card p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-users-cog text-purple-500 mr-3"></i>
+                            User Access Management
+                        </h2>
+                        <div class="text-sm text-gray-600 bg-gray-100 px-4 py-2 rounded-full">
+                            Managing: <span id="selectedToolName" class="font-semibold text-blue-600"></span>
+                        </div>
+                    </div>
+
+                    <!-- Current Users -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Current Users</h3>
+                        <div id="currentUsersList" class="space-y-3">
+                            <!-- Users will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Add New User -->
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 mb-8">
+                        <h3 class="text-lg font-semibold text-green-800 mb-4 flex items-center">
+                            <i class="fas fa-user-plus text-green-600 mr-2"></i>
+                            Grant Access to New User
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <input type="email" id="newUserEmail" placeholder="Email Address" 
+                                   class="px-4 py-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-white">
+                            <input type="text" id="newUserName" placeholder="Full Name" 
+                                   class="px-4 py-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-white">
+                            <select id="newUserRole" class="px-4 py-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-white">
+                                <option value="User">User</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <input type="password" id="newUserPassword" placeholder="Password (leave empty for auto-generate)" 
+                                   class="flex-1 px-4 py-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-white">
+                            <button onclick="grantAccess()" class="btn-success text-white px-8 py-3 rounded-lg font-semibold">
+                                <i class="fas fa-plus mr-2"></i>Grant Access
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Modify Existing User -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center">
+                            <i class="fas fa-user-edit text-blue-600 mr-2"></i>
+                            Modify Existing User
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <select id="existingUserSelect" class="px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
+                                <option value="">Select User</option>
+                            </select>
+                            <input type="password" id="newPassword" placeholder="New Password" 
+                                   class="px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
+                            <button onclick="updateUserAccess()" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">
+                                <i class="fas fa-save mr-2"></i>Update
+                            </button>
+                            <button onclick="revokeAccess()" class="btn-danger text-white px-6 py-3 rounded-lg font-semibold">
+                                <i class="fas fa-trash mr-2"></i>Revoke
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="admin-card p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-info-circle text-indigo-500 mr-3"></i>
+                    How to Apply Changes
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+                        <h3 class="font-bold text-blue-800 mb-3 flex items-center">
+                            <i class="fas fa-download mr-2"></i>
+                            Download Credentials
+                        </h3>
+                        <p class="text-blue-700 text-sm mb-4">Download the updated credentials file and replace it in your tool.</p>
+                        <button onclick="downloadCredentials()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                            <i class="fas fa-download mr-2"></i>Download credentials.js
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
+                        <h3 class="font-bold text-purple-800 mb-3 flex items-center">
+                            <i class="fas fa-sync mr-2"></i>
+                            Auto-Sync (Coming Soon)
+                        </h3>
+                        <p class="text-purple-700 text-sm mb-4">Future feature: Automatically sync changes to your tools.</p>
+                        <button disabled class="bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-not-allowed">
+                            <i class="fas fa-clock mr-2"></i>Coming Soon
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessage" class="hidden fixed bottom-6 right-6 p-4 rounded-lg shadow-lg z-50 max-w-md">
+            <div class="flex items-center">
+                <i id="statusIcon" class="mr-3 text-lg"></i>
+                <span id="statusText" class="font-medium"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const MASTER_ADMIN_PASSWORD = 'MasterAdmin2024!';
+        
+        // Tools configuration
+        const TOOLS = {
+            'v1': {
+                name: 'Campaign Builder V1.0',
+                description: 'Original Amazon PPC Campaign Builder',
+                icon: 'fas fa-chart-line',
+                color: 'from-blue-500 to-blue-600',
+                url: 'https://muhmmadasadullah.github.io/Amazon-PPC-Campaign-Builder-1.0/',
+                adminPassword: 'AdminPPC2024!',
+                credentials: {
+                    'hellomasadullah@gmail.com': 'Amzcampaignbuilder',
+                    'asadullah@amzonestep.com': 'Amzcampaignbuilder'
+                },
+                settings: {
+                    'hellomasadullah@gmail.com': { name: 'Masadullah', role: 'Admin' },
+                    'asadullah@amzonestep.com': { name: 'Asadullah', role: 'User' }
+                }
+            },
+            'v2': {
+                name: 'Campaign Builder V2.0',
+                description: 'Enhanced version with advanced features',
+                icon: 'fas fa-rocket',
+                color: 'from-purple-500 to-purple-600',
+                url: 'https://muhmmadasadullah.github.io/Amazon-PPC-Campaign-Builder/',
+                adminPassword: '16^^c1Tt6FXgcvTT!z',
+                credentials: {
+                    'hellomasadullah@gmail.com': 'zjq1gFHeFEDjWBT6',
+                    'asadullah@amzonestep.com': 'ZJiRRcHE&Pbh7h*O'
+                },
+                settings: {
+                    'hellomasadullah@gmail.com': { name: 'Masadullah', role: 'Admin' },
+                    'asadullah@amzonestep.com': { name: 'Asadullah', role: 'User' }
+                }
+            }
+        };
+
+        let selectedTool = null;
+        let isAuthenticated = false;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            populateToolsGrid();
+            updateTotalUsers();
+        });
+
+        function authenticateMasterAdmin() {
+            const password = document.getElementById('masterAdminPassword').value;
+            
+            if (password === MASTER_ADMIN_PASSWORD) {
+                isAuthenticated = true;
+                document.getElementById('adminAuth').classList.add('hidden');
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                showStatus('success', 'Master admin authentication successful!');
+            } else {
+                showStatus('error', 'Invalid master admin password. Please try again.');
+            }
+        }
+
+        function populateToolsGrid() {
+            const grid = document.getElementById('toolsGrid');
+            grid.innerHTML = '';
+
+            Object.keys(TOOLS).forEach(toolId => {
+                const tool = TOOLS[toolId];
+                const userCount = Object.keys(tool.credentials).length;
+                
+                const toolCard = document.createElement('div');
+                toolCard.className = `tool-card bg-gradient-to-br ${tool.color} rounded-xl p-6 text-white`;
+                toolCard.onclick = () => selectTool(toolId);
+                
+                toolCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="${tool.icon} text-3xl"></i>
+                        <span class="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs font-semibold">${userCount} users</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">${tool.name}</h3>
+                    <p class="text-sm opacity-90 mb-4">${tool.description}</p>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="opacity-75">Click to manage</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                `;
+                
+                grid.appendChild(toolCard);
+            });
+
+            // Add future tools placeholder
+            const placeholderCard = document.createElement('div');
+            placeholderCard.className = 'tool-card bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl p-6 text-white opacity-50 cursor-not-allowed';
+            placeholderCard.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <i class="fas fa-plus text-3xl"></i>
+                    <span class="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs font-semibold">Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Future Tools</h3>
+                <p class="text-sm opacity-90 mb-4">More tools will be added here</p>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="opacity-75">Coming soon</span>
+                    <i class="fas fa-clock"></i>
+                </div>
+            `;
+            grid.appendChild(placeholderCard);
+        }
+
+        function selectTool(toolId) {
+            selectedTool = toolId;
+            
+            // Update UI
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Show user management section
+            document.getElementById('userManagementSection').classList.add('show');
+            document.getElementById('selectedToolName').textContent = TOOLS[toolId].name;
+            
+            // Populate users
+            populateCurrentUsers();
+            populateUserSelect();
+            
+            showStatus('info', `Selected ${TOOLS[toolId].name} for management`);
+        }
+
+        function populateCurrentUsers() {
+            if (!selectedTool) return;
+            
+            const usersList = document.getElementById('currentUsersList');
+            const tool = TOOLS[selectedTool];
+            usersList.innerHTML = '';
+
+            Object.keys(tool.credentials).forEach(email => {
+                const settings = tool.settings[email] || { name: 'Unknown', role: 'User' };
+                
+                const userDiv = document.createElement('div');
+                userDiv.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors';
+                userDiv.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800">${settings.name}</div>
+                            <div class="text-sm text-gray-600">${email}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="access-badge ${selectedTool}">${TOOLS[selectedTool].name}</span>
+                        <span class="px-3 py-1 text-xs font-medium bg-${settings.role === 'Admin' ? 'red' : 'blue'}-100 text-${settings.role === 'Admin' ? 'red' : 'blue'}-800 rounded-full">${settings.role}</span>
+                    </div>
+                `;
+                usersList.appendChild(userDiv);
+            });
+        }
+
+        function populateUserSelect() {
+            if (!selectedTool) return;
+            
+            const select = document.getElementById('existingUserSelect');
+            const tool = TOOLS[selectedTool];
+            select.innerHTML = '<option value="">Select User</option>';
+            
+            Object.keys(tool.credentials).forEach(email => {
+                const settings = tool.settings[email] || { name: 'Unknown' };
+                const option = document.createElement('option');
+                option.value = email;
+                option.textContent = `${settings.name} (${email})`;
+                select.appendChild(option);
+            });
+        }
+
+        function grantAccess() {
+            if (!selectedTool) {
+                showStatus('error', 'Please select a tool first');
+                return;
+            }
+
+            const email = document.getElementById('newUserEmail').value;
+            const name = document.getElementById('newUserName').value;
+            const role = document.getElementById('newUserRole').value;
+            let password = document.getElementById('newUserPassword').value;
+
+            if (!email || !name) {
+                showStatus('error', 'Please fill in email and name');
+                return;
+            }
+
+            if (!password) {
+                password = generateSecurePassword();
+            }
+
+            const tool = TOOLS[selectedTool];
+            
+            if (tool.credentials[email]) {
+                showStatus('error', 'User already has access to this tool');
+                return;
+            }
+
+            // Add user
+            tool.credentials[email] = password;
+            tool.settings[email] = { name, role, lastLogin: null };
+
+            // Update UI
+            populateCurrentUsers();
+            populateUserSelect();
+            updateTotalUsers();
+
+            // Clear form
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserPassword').value = '';
+
+            showStatus('success', `Access granted to ${name}. Password: ${password}`);
+        }
+
+        function updateUserAccess() {
+            if (!selectedTool) {
+                showStatus('error', 'Please select a tool first');
+                return;
+            }
+
+            const email = document.getElementById('existingUserSelect').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (!email) {
+                showStatus('error', 'Please select a user');
+                return;
+            }
+
+            if (!newPassword) {
+                showStatus('error', 'Please enter a new password');
+                return;
+            }
+
+            const tool = TOOLS[selectedTool];
+            tool.credentials[email] = newPassword;
+
+            // Clear form
+            document.getElementById('existingUserSelect').value = '';
+            document.getElementById('newPassword').value = '';
+
+            showStatus('success', `Password updated for ${email}`);
+        }
+
+        function revokeAccess() {
+            if (!selectedTool) {
+                showStatus('error', 'Please select a tool first');
+                return;
+            }
+
+            const email = document.getElementById('existingUserSelect').value;
+
+            if (!email) {
+                showStatus('error', 'Please select a user');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to revoke access for ${email}?`)) {
+                const tool = TOOLS[selectedTool];
+                delete tool.credentials[email];
+                delete tool.settings[email];
+
+                // Update UI
+                populateCurrentUsers();
+                populateUserSelect();
+                updateTotalUsers();
+
+                // Clear form
+                document.getElementById('existingUserSelect').value = '';
+
+                showStatus('success', `Access revoked for ${email}`);
+            }
+        }
+
+        function downloadCredentials() {
+            if (!selectedTool) {
+                showStatus('error', 'Please select a tool first');
+                return;
+            }
+
+            const tool = TOOLS[selectedTool];
+            const credentialsContent = `/**
+ * User Credentials Configuration
+ * ${tool.name}
+ * 
+ * Generated on: ${new Date().toLocaleString()}
+ * Generated by: Central Admin Dashboard
+ */
+
+const USER_CREDENTIALS = ${JSON.stringify(tool.credentials, null, 4)};
+
+const USER_SETTINGS = ${JSON.stringify(tool.settings, null, 4)};
+
+// Export for use in other files
+if (typeof window !== 'undefined') {
+    window.USER_CREDENTIALS = USER_CREDENTIALS;
+    window.USER_SETTINGS = USER_SETTINGS;
+}
+
+// For Node.js environments
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        USER_CREDENTIALS,
+        USER_SETTINGS
+    };
+}`;
+
+            const blob = new Blob([credentialsContent], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `credentials-${selectedTool}.js`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showStatus('success', 'Credentials file downloaded successfully');
+        }
+
+        function generateSecurePassword(length = 16) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        function updateTotalUsers() {
+            let total = 0;
+            Object.keys(TOOLS).forEach(toolId => {
+                total += Object.keys(TOOLS[toolId].credentials).length;
+            });
+            document.getElementById('totalUsers').textContent = total;
+        }
+
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('statusMessage');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+
+            const config = {
+                success: { icon: 'fas fa-check-circle', bg: 'bg-green-500', text: 'text-white' },
+                error: { icon: 'fas fa-exclamation-circle', bg: 'bg-red-500', text: 'text-white' },
+                info: { icon: 'fas fa-info-circle', bg: 'bg-blue-500', text: 'text-white' }
+            };
+
+            const style = config[type] || config.info;
+            
+            statusDiv.className = `fixed bottom-6 right-6 p-4 rounded-lg shadow-lg z-50 max-w-md ${style.bg} ${style.text}`;
+            statusIcon.className = `mr-3 text-lg ${style.icon}`;
+            statusText.textContent = message;
+            statusDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
