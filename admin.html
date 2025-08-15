@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Amazon PPC Campaign Builder</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="credentials.js"></script>
+    <script src="auth.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .admin-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .password-item {
+            transition: all 0.3s ease;
+        }
+        
+        .password-item:hover {
+            background-color: #f8fafc;
+            transform: translateX(4px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="admin-card rounded-2xl p-8 w-full max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-red-500 to-purple-600 rounded-full mb-4">
+                <i class="fas fa-cog text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Admin Panel</h1>
+            <p class="text-gray-600">Manage user credentials and system settings</p>
+        </div>
+
+        <!-- Admin Authentication -->
+        <div id="adminAuth" class="mb-8">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center">
+                    <i class="fas fa-shield-alt text-yellow-500 mr-2"></i>
+                    <span class="font-semibold text-yellow-800">Admin Access Required</span>
+                </div>
+                <p class="text-sm text-yellow-700 mt-1">Please authenticate as an admin to access password management.</p>
+            </div>
+            
+            <div class="flex space-x-4">
+                <input type="password" id="adminPassword" placeholder="Enter admin password" 
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <button onclick="authenticateAdmin()" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">
+                    <i class="fas fa-key mr-2"></i>Authenticate
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Panel Content (Hidden by default) -->
+        <div id="adminContent" class="hidden">
+            <!-- Current Users Section -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-users mr-2 text-blue-500"></i>
+                    Current Users
+                </h2>
+                <div id="usersList" class="space-y-4">
+                    <!-- User items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Password Management -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-key mr-2 text-purple-500"></i>
+                    Password Management
+                </h2>
+                
+                <!-- Change Password Form -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="font-semibold text-gray-700 mb-4">Change User Password</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <select id="userSelect" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select User</option>
+                        </select>
+                        <input type="password" id="newPassword" placeholder="New Password" 
+                               class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <button onclick="changePassword()" class="btn-success text-white px-6 py-3 rounded-lg font-semibold">
+                            <i class="fas fa-save mr-2"></i>Update Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New User -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-user-plus mr-2 text-green-500"></i>
+                    Add New User
+                </h2>
+                
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input type="email" id="newUserEmail" placeholder="Email Address" 
+                               class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="newUserName" placeholder="Full Name" 
+                               class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="password" id="newUserPassword" placeholder="Password" 
+                               class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <button onclick="addNewUser()" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold">
+                            <i class="fas fa-plus mr-2"></i>Add User
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Code Section -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-code mr-2 text-orange-500"></i>
+                    Generated Credentials Code
+                </h2>
+                
+                <div class="bg-gray-900 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-green-400 font-mono text-sm">credentials.js</span>
+                        <button onclick="copyCredentialsCode()" class="text-blue-400 hover:text-blue-300 text-sm">
+                            <i class="fas fa-copy mr-1"></i>Copy Code
+                        </button>
+                    </div>
+                    <pre id="credentialsCode" class="text-green-400 font-mono text-sm overflow-x-auto"></pre>
+                </div>
+                
+                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-blue-800 mb-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        How to Apply Changes
+                    </h4>
+                    <ol class="text-sm text-blue-700 space-y-1">
+                        <li>1. Copy the generated code above</li>
+                        <li>2. Replace the content in <code class="bg-blue-100 px-1 rounded">credentials.js</code> file</li>
+                        <li>3. Save the file</li>
+                        <li>4. Refresh the application</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Back to App -->
+            <div class="text-center">
+                <a href="index.html" class="inline-flex items-center bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Application
+                </a>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessage" class="hidden mt-6 p-4 rounded-lg">
+            <div class="flex items-center">
+                <i id="statusIcon" class="mr-2"></i>
+                <span id="statusText"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin password (in production, this should be more secure)
+        const ADMIN_PASSWORD = 'AdminPPC2024!';
+        
+        let isAdminAuthenticated = false;
+        let currentCredentials = {};
+        let currentSettings = {};
+
+        // Initialize the admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentCredentials();
+        });
+
+        function loadCurrentCredentials() {
+            if (window.USER_CREDENTIALS && window.USER_SETTINGS) {
+                currentCredentials = { ...window.USER_CREDENTIALS };
+                currentSettings = { ...window.USER_SETTINGS };
+            } else {
+                // Fallback to hardcoded values if credentials.js not loaded
+                currentCredentials = {
+                    'hellomasadullah@gmail.com': 'Amzcampaignbuilder',
+                    'asadullah@amzonestep.com': 'Amzcampaignbuilder'
+                };
+                currentSettings = {
+                    'hellomasadullah@gmail.com': { name: 'Masadullah', role: 'Admin', canChangePasswords: true },
+                    'asadullah@amzonestep.com': { name: 'Asadullah', role: 'User', canChangePasswords: false }
+                };
+            }
+        }
+
+        function authenticateAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                isAdminAuthenticated = true;
+                document.getElementById('adminAuth').classList.add('hidden');
+                document.getElementById('adminContent').classList.remove('hidden');
+                populateUsersList();
+                populateUserSelect();
+                generateCredentialsCode();
+                showStatus('success', 'Admin authentication successful!');
+            } else {
+                showStatus('error', 'Invalid admin password. Please try again.');
+            }
+        }
+
+        function populateUsersList() {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+
+            Object.keys(currentCredentials).forEach(email => {
+                const settings = currentSettings[email] || { name: 'Unknown', role: 'User' };
+                const userDiv = document.createElement('div');
+                userDiv.className = 'password-item flex items-center justify-between p-4 border border-gray-200 rounded-lg';
+                userDiv.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">${settings.name}</div>
+                            <div class="text-sm text-gray-500">${email}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">${settings.role}</span>
+                        <button onclick="removeUser('${email}')" class="text-red-500 hover:text-red-700 p-2">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                usersList.appendChild(userDiv);
+            });
+        }
+
+        function populateUserSelect() {
+            const select = document.getElementById('userSelect');
+            select.innerHTML = '<option value="">Select User</option>';
+            
+            Object.keys(currentCredentials).forEach(email => {
+                const settings = currentSettings[email] || { name: 'Unknown' };
+                const option = document.createElement('option');
+                option.value = email;
+                option.textContent = `${settings.name} (${email})`;
+                select.appendChild(option);
+            });
+        }
+
+        function changePassword() {
+            const email = document.getElementById('userSelect').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (!email || !newPassword) {
+                showStatus('error', 'Please select a user and enter a new password.');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showStatus('error', 'Password must be at least 6 characters long.');
+                return;
+            }
+
+            currentCredentials[email] = newPassword;
+            generateCredentialsCode();
+            showStatus('success', `Password updated for ${email}. Copy the generated code to apply changes.`);
+            
+            // Clear form
+            document.getElementById('userSelect').value = '';
+            document.getElementById('newPassword').value = '';
+        }
+
+        function addNewUser() {
+            const email = document.getElementById('newUserEmail').value;
+            const name = document.getElementById('newUserName').value;
+            const password = document.getElementById('newUserPassword').value;
+
+            if (!email || !name || !password) {
+                showStatus('error', 'Please fill in all fields.');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                showStatus('error', 'Please enter a valid email address.');
+                return;
+            }
+
+            if (password.length < 6) {
+                showStatus('error', 'Password must be at least 6 characters long.');
+                return;
+            }
+
+            if (currentCredentials[email]) {
+                showStatus('error', 'A user with this email already exists.');
+                return;
+            }
+
+            // Add new user
+            currentCredentials[email] = password;
+            currentSettings[email] = {
+                name: name,
+                role: 'User',
+                canChangePasswords: false,
+                lastLogin: null
+            };
+
+            populateUsersList();
+            populateUserSelect();
+            generateCredentialsCode();
+            showStatus('success', `New user ${name} added successfully. Copy the generated code to apply changes.`);
+
+            // Clear form
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserPassword').value = '';
+        }
+
+        function removeUser(email) {
+            if (confirm(`Are you sure you want to remove ${email}?`)) {
+                delete currentCredentials[email];
+                delete currentSettings[email];
+                
+                populateUsersList();
+                populateUserSelect();
+                generateCredentialsCode();
+                showStatus('success', `User ${email} removed successfully. Copy the generated code to apply changes.`);
+            }
+        }
+
+        function generateCredentialsCode() {
+            const credentialsCode = `/**
+ * User Credentials Configuration
+ * 
+ * Generated on: ${new Date().toLocaleString()}
+ * 
+ * TO UPDATE PASSWORDS:
+ * 1. Replace the content in credentials.js with this code
+ * 2. Save the file
+ * 3. Refresh the application
+ */
+
+const USER_CREDENTIALS = ${JSON.stringify(currentCredentials, null, 4)};
+
+const USER_SETTINGS = ${JSON.stringify(currentSettings, null, 4)};
+
+// Export for use in other files
+if (typeof window !== 'undefined') {
+    window.USER_CREDENTIALS = USER_CREDENTIALS;
+    window.USER_SETTINGS = USER_SETTINGS;
+}
+
+// For Node.js environments
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        USER_CREDENTIALS,
+        USER_SETTINGS
+    };
+}`;
+
+            document.getElementById('credentialsCode').textContent = credentialsCode;
+        }
+
+        function copyCredentialsCode() {
+            const code = document.getElementById('credentialsCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showStatus('success', 'Credentials code copied to clipboard!');
+            });
+        }
+
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('statusMessage');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+
+            statusDiv.className = `mt-6 p-4 rounded-lg ${type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`;
+            statusIcon.className = `mr-2 fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
+            statusText.textContent = message;
+            statusDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

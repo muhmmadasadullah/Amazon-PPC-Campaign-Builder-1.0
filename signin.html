@@ -290,11 +290,17 @@
         </div>
     </div>
 
+    <script src="credentials.js"></script>
     <script>
-        // Authentication logic
-        const validCredentials = {
+        // Authentication logic - Load from credentials file
+        const validCredentials = window.USER_CREDENTIALS || {
             'hellomasadullah@gmail.com': 'Amzcampaignbuilder',
             'asadullah@amzonestep.com': 'Amzcampaignbuilder'
+        };
+        
+        const userSettings = window.USER_SETTINGS || {
+            'hellomasadullah@gmail.com': { name: 'Masadullah', role: 'Admin' },
+            'asadullah@amzonestep.com': { name: 'Asadullah', role: 'User' }
         };
 
         // DOM elements
@@ -362,9 +368,15 @@
             setTimeout(() => {
                 if (validCredentials[email] && validCredentials[email] === password) {
                     // Successful authentication
+                    const userInfo = userSettings[email] || { 
+                        name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+                        role: 'User'
+                    };
+                    
                     const userData = {
                         email: email,
-                        name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+                        name: userInfo.name,
+                        role: userInfo.role,
                         loginTime: new Date().toISOString(),
                         rememberMe: rememberMe
                     };

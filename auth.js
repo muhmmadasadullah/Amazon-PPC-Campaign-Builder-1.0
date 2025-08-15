@@ -181,7 +181,11 @@ class AuthManager {
                             </div>
                         </div>
                     </div>
-                    <div class="p-2">
+                    <div class="p-2 space-y-1">
+                        <button onclick="openChangePasswordModal()" class="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors duration-200">
+                            <i class="fas fa-key"></i>
+                            <span>Change Password</span>
+                        </button>
                         <button id="signOutBtn" class="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors duration-200">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Sign Out</span>
