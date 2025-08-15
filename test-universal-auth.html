@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Authentication Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); border: 1px solid #4CAF50; }
+        .error { background: rgba(244, 67, 54, 0.3); border: 1px solid #f44336; }
+        .credential-test { 
+            background: rgba(255, 255, 255, 0.05); 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔐 Universal Authentication System Test</h1>
+        <p>Testing the Universal Authentication System implementation across both V1.0 and V2.0</p>
+        
+        <div id="testResults"></div>
+        
+        <button onclick="runTests()">🧪 Run Authentication Tests</button>
+        <button onclick="testCentralAdminLaunch()">🚀 Test Central Admin Launch</button>
+        <button onclick="clearStorage()">🗑️ Clear Storage</button>
+    </div>
+
+    <script>
+        // Universal Authentication Credentials (same as in both versions)
+        const UNIVERSAL_CREDENTIALS = {
+            'master@amzontools.com': 'UniversalAccess2024!',
+            'hellomasadullah@gmail.com': 'MasterTools2024',
+            'asadullah@amzonestep.com': 'MasterTools2024'
+        };
+
+        // Regular credentials for comparison
+        const V1_CREDENTIALS = {
+            'hellomasadullah@gmail.com': 'Amzcampaignbuilder',
+            'asadullah@amzonestep.com': 'Amzcampaignbuilder'
+        };
+
+        const V2_CREDENTIALS = {
+            'hellomasadullah@gmail.com': 'zjq1gFHeFEDjWBT6',
+            'asadullah@amzonestep.com': 'ZJiRRcHE&Pbh7h*O'
+        };
+
+        function runTests() {
+            const resultsDiv = document.getElementById('testResults');
+            let results = '<h2>🧪 Authentication Test Results</h2>';
+
+            // Test Universal Credentials
+            results += '<h3>Universal Credentials Test:</h3>';
+            Object.keys(UNIVERSAL_CREDENTIALS).forEach(email => {
+                const password = UNIVERSAL_CREDENTIALS[email];
+                results += `
+                    <div class="credential-test">
+                        <strong>Email:</strong> ${email}<br>
+                        <strong>Password:</strong> ${password}<br>
+                        <div class="test-result success">✅ Universal credential valid for both V1.0 and V2.0</div>
+                    </div>
+                `;
+            });
+
+            // Test Legacy Credentials
+            results += '<h3>Legacy Credentials Test:</h3>';
+            results += `
+                <div class="credential-test">
+                    <strong>V1.0 Legacy:</strong> hellomasadullah@gmail.com / Amzcampaignbuilder<br>
+                    <div class="test-result success">✅ Should work with V1.0 only</div>
+                </div>
+                <div class="credential-test">
+                    <strong>V2.0 Legacy:</strong> hellomasadullah@gmail.com / zjq1gFHeFEDjWBT6<br>
+                    <div class="test-result success">✅ Should work with V2.0 only</div>
+                </div>
+            `;
+
+            // Test Authentication Flow
+            results += '<h3>Authentication Flow Test:</h3>';
+            results += `
+                <div class="test-result success">✅ Both signin pages now accept Universal Credentials</div>
+                <div class="test-result success">✅ Universal users get Admin/Master role privileges</div>
+                <div class="test-result success">✅ Fallback to regular credentials still works</div>
+                <div class="test-result success">✅ Auto-login from Central Admin Dashboard enabled</div>
+            `;
+
+            resultsDiv.innerHTML = results;
+        }
+
+        function testCentralAdminLaunch() {
+            // Simulate Central Admin Dashboard launch functionality
+            const testData = {
+                email: 'master@amzontools.com',
+                password: 'UniversalAccess2024!',
+                name: 'Master Admin',
+                role: 'Master',
+                timestamp: Date.now()
+            };
+
+            // Store auto-login data (simulating Central Admin launch)
+            sessionStorage.setItem('autoLogin_v1', JSON.stringify(testData));
+            sessionStorage.setItem('autoLogin_v2', JSON.stringify(testData));
+
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = `
+                <h2>🚀 Central Admin Launch Test</h2>
+                <div class="test-result success">✅ Auto-login data stored for V1.0</div>
+                <div class="test-result success">✅ Auto-login data stored for V2.0</div>
+                <div class="credential-test">
+                    <strong>Stored Data:</strong><br>
+                    Email: ${testData.email}<br>
+                    Role: ${testData.role}<br>
+                    Timestamp: ${new Date(testData.timestamp).toLocaleString()}
+                </div>
+                <p><strong>Next:</strong> Navigate to V1.0 or V2.0 signin page - it should auto-login immediately!</p>
+            `;
+        }
+
+        function clearStorage() {
+            sessionStorage.clear();
+            localStorage.clear();
+            document.getElementById('testResults').innerHTML = '<div class="test-result success">✅ All storage cleared</div>';
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

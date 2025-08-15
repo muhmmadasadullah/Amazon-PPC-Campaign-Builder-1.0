@@ -191,7 +191,7 @@
                 </div>
                 <div class="text-right">
                     <div class="stats-card rounded-lg p-4 text-white">
-                        <div class="text-2xl font-bold" id="totalUsers">14</div>
+                        <div class="text-2xl font-bold" id="totalUsers">2</div>
                         <div class="text-sm opacity-75">Total Users</div>
                     </div>
                 </div>
@@ -351,6 +351,13 @@
         // Configuration
         const MASTER_ADMIN_PASSWORD = 'MasterAdmin2024!';
         
+        // Universal Authentication Credentials - Work across ALL tools
+        const UNIVERSAL_CREDENTIALS = {
+            'master@amzontools.com': 'UniversalAccess2024!',
+            'hellomasadullah@gmail.com': 'MasterTools2024',
+            'asadullah@amzonestep.com': 'MasterTools2024'
+        };
+        
         // Tools configuration
         const TOOLS = {
             'v1': {
@@ -508,9 +515,13 @@
                     </div>
                     <h3 class="text-xl font-bold mb-2">${tool.name}</h3>
                     <p class="text-sm opacity-90 mb-4">${tool.description}</p>
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="opacity-75">Click to manage</span>
-                        <i class="fas fa-arrow-right"></i>
+                    <div class="flex items-center justify-between gap-2">
+                        <button onclick="event.stopPropagation(); selectTool('${toolId}')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-lg text-xs font-semibold transition-all">
+                            <i class="fas fa-users mr-1"></i>Manage
+                        </button>
+                        <button onclick="event.stopPropagation(); launchTool('${toolId}')" class="bg-white bg-opacity-30 hover:bg-opacity-40 px-3 py-1 rounded-lg text-xs font-semibold transition-all">
+                            <i class="fas fa-external-link-alt mr-1"></i>Launch
+                        </button>
                     </div>
                 `;
                 
@@ -761,11 +772,43 @@ if (typeof module !== 'undefined' && module.exports) {
         }
 
         function updateTotalUsers() {
-            let total = 0;
+            // Count unique users across all tools
+            const uniqueUsers = new Set();
             Object.keys(TOOLS).forEach(toolId => {
-                total += Object.keys(TOOLS[toolId].credentials).length;
+                Object.keys(TOOLS[toolId].credentials).forEach(email => {
+                    uniqueUsers.add(email);
+                });
             });
-            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('totalUsers').textContent = uniqueUsers.size;
+        }
+
+        // Launch Tool with Auto-Login
+        function launchTool(toolId) {
+            const tool = TOOLS[toolId];
+            if (!tool) {
+                showStatus('error', 'Tool not found');
+                return;
+            }
+
+            // Set up auto-login credentials in sessionStorage
+            const autoLoginData = {
+                email: 'hellomasadullah@gmail.com', // Default admin user
+                password: UNIVERSAL_CREDENTIALS['hellomasadullah@gmail.com'],
+                autoLogin: true,
+                timestamp: Date.now()
+            };
+            
+            // Store auto-login data with tool-specific key
+            sessionStorage.setItem(`autoLogin_${toolId}`, JSON.stringify(autoLoginData));
+            
+            // Open tool in new tab
+            const newWindow = window.open(tool.url, '_blank');
+            
+            if (newWindow) {
+                showStatus('success', `Launching ${tool.name}...`);
+            } else {
+                showStatus('error', 'Popup blocked. Please allow popups and try again.');
+            }
         }
 
         function showStatus(type, message) {
@@ -791,5 +834,18 @@ if (typeof module !== 'undefined' && module.exports) {
             }, 5000);
         }
     </script>
+
+    <!-- Professional Footer -->
+    <footer class="bg-gray-900 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-2 text-sm">
+                <i class="fas fa-code text-blue-400"></i>
+                <span>Made by</span>
+                <a href="https://www.linkedin.com/in/muhamadasadullah/" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                    Asadullah
+                </a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

@@ -345,6 +345,13 @@
 
     <script src="credentials.js"></script>
     <script>
+        // Universal Authentication Credentials - Work across ALL tools
+        const UNIVERSAL_CREDENTIALS = {
+            'master@amzontools.com': 'UniversalAccess2024!',
+            'hellomasadullah@gmail.com': 'MasterTools2024',
+            'asadullah@amzonestep.com': 'MasterTools2024'
+        };
+
         // Authentication logic - Load from credentials file
         const validCredentials = window.USER_CREDENTIALS || {
             'hellomasadullah@gmail.com': 'Amzcampaignbuilder',
@@ -354,6 +361,13 @@
         const userSettings = window.USER_SETTINGS || {
             'hellomasadullah@gmail.com': { name: 'Masadullah', role: 'Admin' },
             'asadullah@amzonestep.com': { name: 'Asadullah', role: 'User' }
+        };
+
+        // Universal user settings for universal credentials
+        const universalUserSettings = {
+            'master@amzontools.com': { name: 'Master Admin', role: 'Master' },
+            'hellomasadullah@gmail.com': { name: 'Masadullah', role: 'Admin' },
+            'asadullah@amzonestep.com': { name: 'Asadullah', role: 'Admin' }
         };
 
         // DOM elements
@@ -419,12 +433,26 @@
 
             // Simulate authentication delay
             setTimeout(() => {
-                if (validCredentials[email] && validCredentials[email] === password) {
-                    // Successful authentication
-                    const userInfo = userSettings[email] || { 
-                        name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
-                        role: 'User'
-                    };
+                // Check both regular credentials and universal credentials
+                const isValidRegular = validCredentials[email] && validCredentials[email] === password;
+                const isValidUniversal = UNIVERSAL_CREDENTIALS[email] && UNIVERSAL_CREDENTIALS[email] === password;
+                
+                if (isValidRegular || isValidUniversal) {
+                    // Successful authentication - Check both user settings
+                    let userInfo = userSettings[email] || universalUserSettings[email];
+                    
+                    // If user authenticated with universal credentials, prefer universal settings
+                    if (isValidUniversal && universalUserSettings[email]) {
+                        userInfo = universalUserSettings[email];
+                    }
+                    
+                    // Fallback to default user info if not found
+                    if (!userInfo) {
+                        userInfo = { 
+                            name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+                            role: 'User'
+                        };
+                    }
                     
                     const userData = {
                         email: email,
@@ -573,5 +601,18 @@
             }
         });
     </script>
+
+    <!-- Professional Footer -->
+    <footer class="bg-gray-900 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-2 text-sm">
+                <i class="fas fa-code text-blue-400"></i>
+                <span>Made by</span>
+                <a href="https://www.linkedin.com/in/muhamadasadullah/" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                    Asadullah
+                </a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

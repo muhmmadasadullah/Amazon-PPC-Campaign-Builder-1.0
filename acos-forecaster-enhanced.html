@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACoS Forecaster 1.0 Enhanced - Professional Amazon PPC Tool</title>
+    <meta name="description" content="Professional Amazon PPC ACoS Forecaster with enhanced features, input validation, and business-focused design">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        /* Professional Business Theme */
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-blue: #3b82f6;
+            --accent-blue: #60a5fa;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --danger-red: #ef4444;
+            --dark-gray: #1f2937;
+            --medium-gray: #6b7280;
+            --light-gray: #f9fafb;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .business-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+        }
+
+        .professional-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .professional-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .forecast-card {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .danger-card {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .input-field {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+        .input-field.error {
+            border-color: var(--danger-red);
+            background: #fef2f2;
+        }
+
+        .input-field.error:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .professional-button {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .professional-button:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-1px);
+        }
+
+        .professional-button.secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 1px solid #e5e7eb;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-gray);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        .error-message {
+            color: var(--danger-red);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .kpi-positive { background-color: #dcfce7; color: #166534; }
+        .kpi-negative { background-color: #fee2e2; color: #991b1b; }
+        .kpi-neutral { background-color: #f3f4f6; color: #374151; }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #f3f4f6;
+            border-radius: 50%;
+            border-top-color: var(--primary-blue);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .business-footer {
+            background: var(--dark-gray);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Professional Business Header -->
+    <header class="business-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                        <i class="fas fa-crystal-ball text-xl text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">ACoS Forecaster 1.0 Enhanced</h1>
+                        <p class="text-blue-100 text-sm">Professional Amazon PPC Forecasting Tool</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="exportResults()" class="professional-button secondary bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white border-opacity-30">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                    <button onclick="showHelp()" class="professional-button secondary bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white border-opacity-30">
+                        <i class="fas fa-question-circle mr-2"></i>Help
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Quick Start Guide -->
+        <div id="quickStart" class="professional-card p-6 mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-lightbulb text-blue-600 text-xl"></i>
+                    <div>
+                        <h2 class="text-lg font-semibold text-blue-900">Quick Start Guide</h2>
+                        <p class="text-blue-700 text-sm">Enter your current campaign data to forecast ACoS changes</p>
+                    </div>
+                </div>
+                <button onclick="hideQuickStart()" class="text-blue-400 hover:text-blue-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</span>
+                    <span>Enter current campaign metrics</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</span>
+                    <span>Input new CPC and CVR targets</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">3</span>
+                    <span>Review forecasted results</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Section -->
+            <div class="professional-card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-edit text-blue-600 mr-3"></i>
+                        Campaign Inputs
+                    </h2>
+                    <button onclick="loadSampleData()" class="professional-button secondary text-sm">
+                        <i class="fas fa-flask mr-1"></i>Sample Data
+                    </button>
+                </div>
+
+                <!-- Current Campaign Data -->
+                <div class="space-y-4">
+                    <h3 class="font-semibold text-gray-700 border-b border-gray-200 pb-2">Current Campaign Data</h3>
+                    
+                    <div>
+                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            Ad Spend ($)
+                            <i class="fas fa-info-circle text-gray-400 ml-2 tooltip" data-tooltip="Total amount spent on Amazon PPC ads"></i>
+                        </label>
+                        <input type="number" id="adSpend" class="input-field w-full" placeholder="1000.00" step="0.01" min="0">
+                        <div id="adSpendError" class="error-message hidden">Please enter a valid ad spend amount</div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            Ad Sales ($)
+                            <i class="fas fa-info-circle text-gray-400 ml-2 tooltip" data-tooltip="Total sales generated from Amazon PPC ads"></i>
+                        </label>
+                        <input type="number" id="adSales" class="input-field w-full" placeholder="5000.00" step="0.01" min="0">
+                        <div id="adSalesError" class="error-message hidden">Please enter a valid ad sales amount</div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            Ad Clicks
+                            <i class="fas fa-info-circle text-gray-400 ml-2 tooltip" data-tooltip="Total number of clicks on your ads"></i>
+                        </label>
+                        <input type="number" id="adClicks" class="input-field w-full" placeholder="500" step="1" min="0">
+                        <div id="adClicksError" class="error-message hidden">Please enter a valid number of clicks</div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            Ad Orders
+                            <i class="fas fa-info-circle text-gray-400 ml-2 tooltip" data-tooltip="Total number of orders from your ads"></i>
+                        </label>
+                        <input type="number" id="adOrders" class="input-field w-full" placeholder="25" step="1" min="0">
+                        <div id="adOrdersError" class="error-message hidden">Please enter a valid number of orders</div>
+                    </div>
+                </div>
+
+                <!-- Forecast Inputs -->
+                <div class="space-y-4 mt-6">
+                    <h3 class="font-semibold text-gray-700 border-b border-gray-200 pb-2">Forecast Targets</h3>
+                    
+                    <div>
+                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            New CPC ($)
+                            <i class="fas fa-info-circle text-gray-400 ml-2 tooltip" data-tooltip="Target cost per click for forecasting"></i>
+                        </label>
+                        <input type="number" id="newCpc" class="input-field w-full" placeholder="2.50" step="0.01" min="0">
+                        <div id="newCpcError" class="error-message hidden">Please enter a valid CPC amount</div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            New CVR (%)
+                            <i class="fas fa-info-circle text-gray-400 ml-2 tooltip" data-tooltip="Target conversion rate percentage for forecasting"></i>
+                        </label>
+                        <input type="number" id="newCvr" class="input-field w-full" placeholder="5.0" step="0.1" min="0" max="100">
+                        <div id="newCvrError" class="error-message hidden">Please enter a valid conversion rate (0-100%)</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-3 mt-6">
+                    <button onclick="calculate()" class="professional-button flex-1">
+                        <i class="fas fa-calculator mr-2"></i>Calculate Forecast
+                    </button>
+                    <button onclick="resetForm()" class="professional-button secondary">
+                        <i class="fas fa-refresh mr-1"></i>Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Current Metrics Section -->
+            <div class="professional-card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-chart-bar text-blue-600 mr-3"></i>
+                    Current Metrics
+                </h2>
+
+                <div class="space-y-4" id="currentMetrics">
+                    <div class="metric-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-blue-800">Current ACoS</span>
+                            <span class="text-xl font-bold text-blue-900" id="currentAcos">--%</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-blue-800">Average CPC</span>
+                            <span class="text-lg font-semibold text-blue-900" id="avgCpc">$--</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-blue-800">Ad CVR</span>
+                            <span class="text-lg font-semibold text-blue-900" id="adCvr">--%</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-blue-800">Ad AOV</span>
+                            <span class="text-lg font-semibold text-blue-900" id="adAov">$--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Indicators -->
+                <div class="mt-6">
+                    <h3 class="font-medium text-gray-700 mb-3">Performance Status</h3>
+                    <div id="performanceIndicators" class="space-y-2">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecast Results Section -->
+            <div class="professional-card p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-crystal-ball text-green-600 mr-3"></i>
+                    Forecast Results
+                </h2>
+
+                <div class="space-y-4" id="forecastResults">
+                    <div class="forecast-card">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-green-800">Forecasted ACoS</span>
+                            <span class="text-2xl font-bold text-green-900" id="forecastedAcos">--%</span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="kpi-badge kpi-neutral" id="acosChange">No change</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="forecast-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-green-800">Est. Spend</span>
+                                <span class="text-lg font-semibold text-green-900" id="estSpend">$--</span>
+                            </div>
+                        </div>
+
+                        <div class="forecast-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-green-800">Est. Orders</span>
+                                <span class="text-lg font-semibold text-green-900" id="estOrders">--</span>
+                            </div>
+                        </div>
+
+                        <div class="forecast-card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-green-800">Est. Sales</span>
+                                <span class="text-lg font-semibold text-green-900" id="estSales">$--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecast Insights -->
+                <div class="mt-6">
+                    <h3 class="font-medium text-gray-700 mb-3">Forecast Insights</h3>
+                    <div id="forecastInsights" class="space-y-2 text-sm text-gray-600">
+                        <p>Enter campaign data to see forecast insights</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculation Logic Explanation -->
+        <div class="professional-card p-6 mt-8">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-brain text-purple-600 mr-3"></i>
+                Calculation Logic
+            </h2>
+            <div class="bg-gray-50 p-4 rounded-lg text-sm text-gray-700">
+                <p><strong>Forecasting Method:</strong> This tool calculates forecasted ACoS by maintaining click volume constant while adjusting CPC and CVR values. The logic assumes:</p>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Estimated Spend:</strong> Current Clicks × New CPC</li>
+                    <li><strong>Estimated Orders:</strong> Current Clicks × (New CVR / 100)</li>
+                    <li><strong>Estimated Sales:</strong> Estimated Orders × Current AOV</li>
+                    <li><strong>Forecasted ACoS:</strong> (Estimated Spend / Estimated Sales) × 100</li>
+                </ul>
+                <p class="mt-2 text-xs text-gray-500">Note: This model assumes AOV and click volume remain constant, focusing on the impact of CPC and CVR changes.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="professional-card max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Help & Documentation</h2>
+                    <button onclick="hideHelp()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4 text-sm text-gray-700">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">How to Use</h3>
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li>Enter your current campaign data (spend, sales, clicks, orders)</li>
+                            <li>Input your target CPC and CVR values</li>
+                            <li>Click "Calculate Forecast" to see predicted results</li>
+                            <li>Review the forecasted ACoS and performance insights</li>
+                        </ol>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Key Metrics Explained</h3>
+                        <ul class="space-y-1">
+                            <li><strong>ACoS:</strong> Advertising Cost of Sales (Ad Spend ÷ Ad Sales × 100)</li>
+                            <li><strong>CPC:</strong> Cost Per Click (Ad Spend ÷ Ad Clicks)</li>
+                            <li><strong>CVR:</strong> Conversion Rate (Ad Orders ÷ Ad Clicks × 100)</li>
+                            <li><strong>AOV:</strong> Average Order Value (Ad Sales ÷ Ad Orders)</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-2">Tips for Accurate Forecasting</h3>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Use data from a consistent time period (e.g., last 30 days)</li>
+                            <li>Ensure your target CPC and CVR are realistic</li>
+                            <li>Consider seasonal factors and market conditions</li>
+                            <li>Test small changes before implementing large adjustments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <footer class="business-footer">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold mb-1">ACoS Forecaster 1.0 Enhanced</h3>
+                    <p class="text-gray-400 text-sm">Professional Amazon PPC Forecasting Tool</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-400">Made by 
+                        <a href="https://linkedin.com/in/muhmmadasadullah" target="_blank" class="text-blue-400 hover:text-blue-300">
+                            Asadullah
+                        </a>
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">© 2024 AmzonTools. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced ACoS Forecaster Logic
+        class ACoSForecaster {
+            constructor() {
+                this.inputs = {
+                    adSpend: 0,
+                    adSales: 0,
+                    adClicks: 0,
+                    adOrders: 0,
+                    newCpc: 0,
+                    newCvr: 0
+                };
+                this.results = {};
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Real-time input validation and calculation
+                const inputIds = ['adSpend', 'adSales', 'adClicks', 'adOrders', 'newCpc', 'newCvr'];
+                inputIds.forEach(id => {
+                    const element = document.getElementById(id);
+                    element.addEventListener('input', () => {
+                        this.validateInput(id);
+                        this.calculate();
+                    });
+                    element.addEventListener('blur', () => this.validateInput(id));
+                });
+            }
+
+            validateInput(inputId) {
+                const element = document.getElementById(inputId);
+                const errorElement = document.getElementById(inputId + 'Error');
+                const value = parseFloat(element.value);
+
+                let isValid = true;
+                let errorMessage = '';
+
+                if (element.value === '') {
+                    isValid = true; // Allow empty values
+                } else if (isNaN(value) || value < 0) {
+                    isValid = false;
+                    errorMessage = 'Please enter a valid positive number';
+                } else if (inputId === 'newCvr' && value > 100) {
+                    isValid = false;
+                    errorMessage = 'Conversion rate cannot exceed 100%';
+                }
+
+                if (isValid) {
+                    element.classList.remove('error');
+                    errorElement.classList.add('hidden');
+                } else {
+                    element.classList.add('error');
+                    errorElement.textContent = errorMessage;
+                    errorElement.classList.remove('hidden');
+                }
+
+                return isValid;
+            }
+
+            validateAllInputs() {
+                const inputIds = ['adSpend', 'adSales', 'adClicks', 'adOrders', 'newCpc', 'newCvr'];
+                return inputIds.every(id => this.validateInput(id));
+            }
+
+            calculate() {
+                // Get input values
+                this.inputs.adSpend = parseFloat(document.getElementById('adSpend').value) || 0;
+                this.inputs.adSales = parseFloat(document.getElementById('adSales').value) || 0;
+                this.inputs.adClicks = parseFloat(document.getElementById('adClicks').value) || 0;
+                this.inputs.adOrders = parseFloat(document.getElementById('adOrders').value) || 0;
+                this.inputs.newCpc = parseFloat(document.getElementById('newCpc').value) || 0;
+                this.inputs.newCvr = parseFloat(document.getElementById('newCvr').value) || 0;
+
+                // Calculate current metrics
+                this.calculateCurrentMetrics();
+                
+                // Calculate forecast
+                this.calculateForecast();
+                
+                // Update UI
+                this.updateCurrentMetricsUI();
+                this.updateForecastUI();
+                this.updatePerformanceIndicators();
+                this.updateForecastInsights();
+            }
+
+            calculateCurrentMetrics() {
+                const { adSpend, adSales, adClicks, adOrders } = this.inputs;
+
+                this.results.currentAcos = adSales > 0 ? (adSpend / adSales) * 100 : 0;
+                this.results.avgCpc = adClicks > 0 ? adSpend / adClicks : 0;
+                this.results.adCvr = adClicks > 0 ? (adOrders / adClicks) * 100 : 0;
+                this.results.adAov = adOrders > 0 ? adSales / adOrders : 0;
+            }
+
+            calculateForecast() {
+                const { adClicks, newCpc, newCvr } = this.inputs;
+
+                if (adClicks > 0 && newCpc > 0 && newCvr > 0) {
+                    this.results.estSpend = adClicks * newCpc;
+                    this.results.estOrders = adClicks * (newCvr / 100);
+                    this.results.estSales = this.results.estOrders * this.results.adAov;
+                    this.results.forecastedAcos = this.results.estSales > 0 ? 
+                        (this.results.estSpend / this.results.estSales) * 100 : 0;
+                    this.results.acosChange = this.results.forecastedAcos - this.results.currentAcos;
+                } else {
+                    this.results.estSpend = 0;
+                    this.results.estOrders = 0;
+                    this.results.estSales = 0;
+                    this.results.forecastedAcos = 0;
+                    this.results.acosChange = 0;
+                }
+            }
+
+            updateCurrentMetricsUI() {
+                document.getElementById('currentAcos').textContent = 
+                    this.results.currentAcos ? this.results.currentAcos.toFixed(2) + '%' : '--%';
+                document.getElementById('avgCpc').textContent = 
+                    this.results.avgCpc ? '$' + this.results.avgCpc.toFixed(2) : '$--';
+                document.getElementById('adCvr').textContent = 
+                    this.results.adCvr ? this.results.adCvr.toFixed(2) + '%' : '--%';
+                document.getElementById('adAov').textContent = 
+                    this.results.adAov ? '$' + this.results.adAov.toFixed(2) : '$--';
+            }
+
+            updateForecastUI() {
+                document.getElementById('forecastedAcos').textContent = 
+                    this.results.forecastedAcos ? this.results.forecastedAcos.toFixed(2) + '%' : '--%';
+                document.getElementById('estSpend').textContent = 
+                    this.results.estSpend ? '$' + this.results.estSpend.toFixed(2) : '$--';
+                document.getElementById('estOrders').textContent = 
+                    this.results.estOrders ? Math.round(this.results.estOrders) : '--';
+                document.getElementById('estSales').textContent = 
+                    this.results.estSales ? '$' + this.results.estSales.toFixed(2) : '$--';
+
+                // Update ACoS change badge
+                const acosChangeElement = document.getElementById('acosChange');
+                if (this.results.acosChange !== 0) {
+                    const changePercent = this.results.acosChange.toFixed(2);
+                    const changeText = changePercent > 0 ? `+${changePercent}%` : `${changePercent}%`;
+                    acosChangeElement.textContent = changeText;
+                    acosChangeElement.className = `kpi-badge ${changePercent > 0 ? 'kpi-negative' : 'kpi-positive'}`;
+                } else {
+                    acosChangeElement.textContent = 'No change';
+                    acosChangeElement.className = 'kpi-badge kpi-neutral';
+                }
+            }
+
+            updatePerformanceIndicators() {
+                const container = document.getElementById('performanceIndicators');
+                container.innerHTML = '';
+
+                if (this.results.currentAcos > 0) {
+                    const indicators = [];
+
+                    // ACoS performance indicator
+                    if (this.results.currentAcos < 15) {
+                        indicators.push({ text: 'Excellent ACoS', class: 'kpi-positive', icon: 'fas fa-check-circle' });
+                    } else if (this.results.currentAcos < 25) {
+                        indicators.push({ text: 'Good ACoS', class: 'kpi-positive', icon: 'fas fa-thumbs-up' });
+                    } else if (this.results.currentAcos < 35) {
+                        indicators.push({ text: 'Average ACoS', class: 'kpi-neutral', icon: 'fas fa-minus-circle' });
+                    } else {
+                        indicators.push({ text: 'High ACoS', class: 'kpi-negative', icon: 'fas fa-exclamation-triangle' });
+                    }
+
+                    // CVR performance indicator
+                    if (this.results.adCvr > 5) {
+                        indicators.push({ text: 'Strong CVR', class: 'kpi-positive', icon: 'fas fa-arrow-up' });
+                    } else if (this.results.adCvr > 2) {
+                        indicators.push({ text: 'Average CVR', class: 'kpi-neutral', icon: 'fas fa-equals' });
+                    } else {
+                        indicators.push({ text: 'Low CVR', class: 'kpi-negative', icon: 'fas fa-arrow-down' });
+                    }
+
+                    indicators.forEach(indicator => {
+                        const div = document.createElement('div');
+                        div.className = `kpi-badge ${indicator.class}`;
+                        div.innerHTML = `<i class="${indicator.icon} mr-1"></i>${indicator.text}`;
+                        container.appendChild(div);
+                    });
+                }
+            }
+
+            updateForecastInsights() {
+                const container = document.getElementById('forecastInsights');
+                
+                if (this.results.forecastedAcos > 0) {
+                    const insights = [];
+
+                    if (this.results.acosChange > 0) {
+                        insights.push(`📈 ACoS is projected to increase by ${this.results.acosChange.toFixed(2)}%`);
+                        insights.push(`⚠️ Consider optimizing targeting or reducing CPC to maintain profitability`);
+                    } else if (this.results.acosChange < 0) {
+                        insights.push(`📉 ACoS is projected to decrease by ${Math.abs(this.results.acosChange).toFixed(2)}%`);
+                        insights.push(`✅ This change should improve campaign profitability`);
+                    } else {
+                        insights.push(`➡️ ACoS is projected to remain unchanged`);
+                    }
+
+                    // Additional insights based on changes
+                    const cpcChange = ((this.inputs.newCpc - this.results.avgCpc) / this.results.avgCpc) * 100;
+                    const cvrChange = ((this.inputs.newCvr - this.results.adCvr) / this.results.adCvr) * 100;
+
+                    if (Math.abs(cpcChange) > 10) {
+                        insights.push(`💰 CPC change of ${cpcChange.toFixed(1)}% may significantly impact spend`);
+                    }
+
+                    if (Math.abs(cvrChange) > 15) {
+                        insights.push(`🎯 CVR change of ${cvrChange.toFixed(1)}% represents a major performance shift`);
+                    }
+
+                    container.innerHTML = insights.map(insight => `<p>${insight}</p>`).join('');
+                } else {
+                    container.innerHTML = '<p>Enter campaign data to see forecast insights</p>';
+                }
+            }
+
+            loadSampleData() {
+                document.getElementById('adSpend').value = '1250.00';
+                document.getElementById('adSales').value = '6250.00';
+                document.getElementById('adClicks').value = '625';
+                document.getElementById('adOrders').value = '31';
+                document.getElementById('newCpc').value = '2.25';
+                document.getElementById('newCvr').value = '5.5';
+                this.calculate();
+            }
+
+            resetForm() {
+                const inputIds = ['adSpend', 'adSales', 'adClicks', 'adOrders', 'newCpc', 'newCvr'];
+                inputIds.forEach(id => {
+                    document.getElementById(id).value = '';
+                    document.getElementById(id).classList.remove('error');
+                    document.getElementById(id + 'Error').classList.add('hidden');
+                });
+                
+                this.results = {};
+                this.updateCurrentMetricsUI();
+                this.updateForecastUI();
+                document.getElementById('performanceIndicators').innerHTML = '';
+                document.getElementById('forecastInsights').innerHTML = '<p>Enter campaign data to see forecast insights</p>';
+            }
+
+            exportResults() {
+                if (!this.results.forecastedAcos) {
+                    alert('Please calculate forecast results before exporting.');
+                    return;
+                }
+
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    inputs: this.inputs,
+                    currentMetrics: {
+                        acos: this.results.currentAcos,
+                        cpc: this.results.avgCpc,
+                        cvr: this.results.adCvr,
+                        aov: this.results.adAov
+                    },
+                    forecast: {
+                        acos: this.results.forecastedAcos,
+                        spend: this.results.estSpend,
+                        orders: this.results.estOrders,
+                        sales: this.results.estSales,
+                        change: this.results.acosChange
+                    }
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `acos-forecast-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Global functions
+        function showHelp() {
+            document.getElementById('helpModal').classList.remove('hidden');
+        }
+
+        function hideHelp() {
+            document.getElementById('helpModal').classList.add('hidden');
+        }
+
+        function hideQuickStart() {
+            document.getElementById('quickStart').style.display = 'none';
+        }
+
+        function loadSampleData() {
+            forecaster.loadSampleData();
+        }
+
+        function resetForm() {
+            forecaster.resetForm();
+        }
+
+        function calculate() {
+            forecaster.calculate();
+        }
+
+        function exportResults() {
+            forecaster.exportResults();
+        }
+
+        // Initialize the application
+        const forecaster = new ACoSForecaster();
+
+        // Load sample data on page load for demonstration
+        window.addEventListener('load', () => {
+            // Uncomment to load sample data by default
+            // forecaster.loadSampleData();
+        });
+    </script>
+</body>
+</html>

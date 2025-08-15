@@ -3,6 +3,13 @@
  * Handles user authentication, session management, and access control
  */
 
+// Universal Authentication Credentials - Work across ALL tools
+const UNIVERSAL_CREDENTIALS = {
+    'master@amzontools.com': 'UniversalAccess2024!',
+    'hellomasadullah@gmail.com': 'MasterTools2024',
+    'asadullah@amzonestep.com': 'MasterTools2024'
+};
+
 class AuthManager {
     constructor() {
         this.currentUser = null;
@@ -18,6 +25,22 @@ class AuthManager {
     // Load user session from storage
     loadUserSession() {
         try {
+            // Check for auto-login from Central Admin Dashboard first
+            const autoLoginKeys = ['autoLogin_v1', 'autoLogin_v2'];
+            for (const key of autoLoginKeys) {
+                const autoLoginData = sessionStorage.getItem(key);
+                if (autoLoginData) {
+                    const loginData = JSON.parse(autoLoginData);
+                    // Check if auto-login data is recent (within 5 minutes)
+                    if (Date.now() - loginData.timestamp < 5 * 60 * 1000) {
+                        this.performAutoLogin(loginData);
+                        sessionStorage.removeItem(key); // Clean up after use
+                        return true;
+                    }
+                    sessionStorage.removeItem(key); // Clean up expired data
+                }
+            }
+
             // Check localStorage first (persistent login)
             let userData = localStorage.getItem('ppcBuilder_user');
             let isRemembered = localStorage.getItem('ppcBuilder_rememberMe') === 'true';
@@ -71,6 +94,34 @@ class AuthManager {
     // Get current user information
     getCurrentUser() {
         return this.currentUser;
+    }
+
+    // Perform auto-login with universal credentials
+    performAutoLogin(loginData) {
+        const userSettings = window.USER_SETTINGS || {};
+        const userInfo = userSettings[loginData.email] || { 
+            name: loginData.email.split('@')[0].charAt(0).toUpperCase() + loginData.email.split('@')[0].slice(1),
+            role: 'User'
+        };
+        
+        const userData = {
+            email: loginData.email,
+            name: userInfo.name,
+            role: userInfo.role,
+            loginTime: new Date().toISOString(),
+            autoLogin: true
+        };
+        
+        // Store in sessionStorage for this session
+        sessionStorage.setItem('ppcBuilder_user', JSON.stringify(userData));
+        this.currentUser = userData;
+        
+        console.log('Auto-login successful for:', userData.name);
+    }
+
+    // Check if universal credentials are valid
+    validateUniversalCredentials(email, password) {
+        return UNIVERSAL_CREDENTIALS[email] === password;
     }
 
     // Redirect to sign-in page if not authenticated

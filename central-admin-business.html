@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmzonTools - Business Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        /* Professional Business Theme */
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-blue: #3b82f6;
+            --accent-blue: #60a5fa;
+            --dark-gray: #1f2937;
+            --medium-gray: #374151;
+            --light-gray: #f9fafb;
+            --border-gray: #e5e7eb;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --danger-red: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+        }
+
+        .business-card {
+            background: white;
+            border: 1px solid var(--border-gray);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .business-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .tool-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-card.premium {
+            border: 2px solid #fbbf24;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-gray);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .stat-label {
+            color: var(--medium-gray);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .professional-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-premium { background: #fef3c7; color: #92400e; }
+        .badge-standard { background: #e0e7ff; color: #3730a3; }
+
+        .navigation-tabs {
+            border-bottom: 1px solid var(--border-gray);
+            background: white;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            color: var(--medium-gray);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+            background: var(--light-gray);
+        }
+
+        .analytics-chart {
+            height: 200px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--medium-gray);
+        }
+
+        .business-footer {
+            background: var(--dark-gray);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .action-button {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-1px);
+        }
+
+        .action-button.secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 1px solid var(--border-gray);
+        }
+
+        .quick-access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .revenue-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Professional Business Header -->
+    <header class="dashboard-header">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                        <i class="fas fa-building text-2xl text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">AmzonTools Business Suite</h1>
+                        <p class="text-blue-100 text-sm">Professional Amazon PPC Management Platform</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="revenue-indicator">
+                        <div>
+                            <div class="text-lg font-bold">$127,450</div>
+                            <div class="text-xs opacity-90">Monthly Revenue</div>
+                        </div>
+                        <i class="fas fa-chart-line text-xl"></i>
+                    </div>
+                    <div class="text-right text-white">
+                        <div class="text-sm opacity-75">Last Login</div>
+                        <div class="font-semibold" id="lastLoginTime">2 hours ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Authentication Section -->
+    <div id="authSection" class="max-w-4xl mx-auto px-6 py-8">
+        <div class="business-card p-8">
+            <div class="text-center mb-8">
+                <i class="fas fa-shield-check text-4xl text-blue-600 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Secure Business Access</h2>
+                <p class="text-gray-600">Enter your business credentials to access the management dashboard</p>
+            </div>
+            
+            <div class="max-w-md mx-auto space-y-4">
+                <input type="password" id="businessPassword" placeholder="Business Access Code" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <button onclick="authenticateBusiness()" class="action-button w-full">
+                    <i class="fas fa-key mr-2"></i>Access Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div id="dashboardContent" class="hidden">
+        <!-- Navigation Tabs -->
+        <div class="navigation-tabs">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex space-x-8">
+                    <div class="nav-tab active" onclick="switchTab('overview')">
+                        <i class="fas fa-chart-pie mr-2"></i>Overview
+                    </div>
+                    <div class="nav-tab" onclick="switchTab('tools')">
+                        <i class="fas fa-tools mr-2"></i>Tool Management
+                    </div>
+                    <div class="nav-tab" onclick="switchTab('users')">
+                        <i class="fas fa-users mr-2"></i>User Access
+                    </div>
+                    <div class="nav-tab" onclick="switchTab('analytics')">
+                        <i class="fas fa-analytics mr-2"></i>Analytics
+                    </div>
+                    <div class="nav-tab" onclick="switchTab('settings')">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Business Performance Overview</h2>
+                    
+                    <!-- Key Metrics -->
+                    <div class="stats-grid mb-8">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalUsers">2</div>
+                            <div class="stat-label">Active Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Active Tools</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">99.8%</div>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">1,247</div>
+                            <div class="stat-label">Monthly Sessions</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="business-card p-6 mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-user-plus text-green-500"></i>
+                                    <span class="text-gray-700">New user granted access to Campaign Builder V2.0</span>
+                                </div>
+                                <span class="text-sm text-gray-500">2 hours ago</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-chart-line text-blue-500"></i>
+                                    <span class="text-gray-700">ACoS Forecaster reached 500 calculations</span>
+                                </div>
+                                <span class="text-sm text-gray-500">5 hours ago</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-shield-check text-green-500"></i>
+                                    <span class="text-gray-700">System security audit completed</span>
+                                </div>
+                                <span class="text-sm text-gray-500">1 day ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div id="toolsTab" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Professional Tool Suite</h2>
+                    <p class="text-gray-600">Manage access and monitor performance of your Amazon PPC tools</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="businessToolsGrid">
+                    <!-- Tools will be populated here -->
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="usersTab" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">User Access Management</h2>
+                    <p class="text-gray-600">Control user permissions and monitor access across all tools</p>
+                </div>
+
+                <div class="business-card p-6" id="userManagementPanel">
+                    <!-- User management content will be populated here -->
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analyticsTab" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Business Analytics</h2>
+                    <p class="text-gray-600">Track usage patterns and optimize tool performance</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="business-card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tool Usage Statistics</h3>
+                        <div class="analytics-chart">
+                            <div class="text-center">
+                                <i class="fas fa-chart-bar text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500">Analytics visualization coming soon</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="business-card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Performance Metrics</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Average Session Duration</span>
+                                <span class="font-semibold">24 minutes</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Most Used Tool</span>
+                                <span class="font-semibold">Campaign Builder V2.0</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Success Rate</span>
+                                <span class="font-semibold text-green-600">97.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="tab-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Business Settings</h2>
+                    <p class="text-gray-600">Configure system preferences and security settings</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="business-card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Security Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Two-Factor Authentication</h4>
+                                    <p class="text-sm text-gray-600">Add an extra layer of security</p>
+                                </div>
+                                <button class="action-button secondary">Enable</button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Session Timeout</h4>
+                                    <p class="text-sm text-gray-600">Automatically log out after inactivity</p>
+                                </div>
+                                <select class="px-3 py-2 border border-gray-300 rounded">
+                                    <option>30 minutes</option>
+                                    <option>1 hour</option>
+                                    <option>2 hours</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="business-card p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Notification Preferences</h3>
+                        <div class="space-y-4">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-gray-700">Email notifications for new user registrations</span>
+                            </label>
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-gray-700">Weekly usage reports</span>
+                            </label>
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" class="rounded">
+                                <span class="text-gray-700">System maintenance alerts</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <footer class="business-footer">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold mb-1">AmzonTools Business Suite</h3>
+                    <p class="text-gray-400 text-sm">Professional Amazon PPC Management Platform</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-400">Made by 
+                        <a href="https://linkedin.com/in/muhmmadasadullah" target="_blank" class="text-blue-400 hover:text-blue-300">
+                            Asadullah
+                        </a>
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">© 2024 AmzonTools. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Universal Authentication Credentials
+        const UNIVERSAL_CREDENTIALS = {
+            'master@amzontools.com': 'UniversalAccess2024!',
+            'hellomasadullah@gmail.com': 'MasterTools2024',
+            'asadullah@amzonestep.com': 'MasterTools2024'
+        };
+
+        // Business configuration
+        const BUSINESS_PASSWORD = 'BusinessAccess2024!';
+        let isAuthenticated = false;
+        let currentTab = 'overview';
+
+        // Professional Tools Configuration
+        const BUSINESS_TOOLS = {
+            'v1': {
+                name: 'Campaign Builder V1.0',
+                description: 'Amazon PPC Campaign Builder - Original Version',
+                icon: 'fas fa-chart-line',
+                category: 'Core Tools',
+                tier: 'standard',
+                url: 'https://muhmmadasadullah.github.io/Amazon-PPC-Campaign-Builder-1.0/',
+                users: 2,
+                lastAccess: '2 hours ago',
+                status: 'active'
+            },
+            'v2': {
+                name: 'Campaign Builder V2.0',
+                description: 'Amazon PPC Campaign Builder - Enhanced Version',
+                icon: 'fas fa-rocket',
+                category: 'Core Tools',
+                tier: 'premium',
+                url: 'https://muhmmadasadullah.github.io/Amazon-PPC-Campaign-Builder/',
+                users: 2,
+                lastAccess: '1 hour ago',
+                status: 'active'
+            },
+            'ppc_budget': {
+                name: 'PPC Budget Calculator',
+                description: '2025 Daily Budget Rules Calculator for Amazon PPC campaigns',
+                icon: 'fas fa-calculator',
+                category: 'Financial Tools',
+                tier: 'standard',
+                url: 'https://muhmmadasadullah.github.io/ppc-budjet/',
+                users: 2,
+                lastAccess: '5 hours ago',
+                status: 'active'
+            },
+            'ads_profit_maximizer': {
+                name: 'Ads Profit Maximizer',
+                description: 'Calculate optimal ad spend and maximize Amazon PPC profitability',
+                icon: 'fas fa-chart-pie',
+                category: 'Optimization Tools',
+                tier: 'premium',
+                url: 'https://muhmmadasadullah.github.io/ads-profit-maximizer/',
+                users: 2,
+                lastAccess: '3 hours ago',
+                status: 'active'
+            },
+            'acos_forecasting': {
+                name: 'ACoS Forecasting App',
+                description: 'Real-time ACoS calculations and PPC performance insights',
+                icon: 'fas fa-chart-area',
+                category: 'Analytics Tools',
+                tier: 'premium',
+                url: 'https://muhmmadasadullah.github.io/acos-forecasting-app/',
+                users: 2,
+                lastAccess: '4 hours ago',
+                status: 'active'
+            },
+            'balanced_spend_calc': {
+                name: 'Balanced Spend Calculator',
+                description: 'Determine optimal ad spend for target TACoS goals',
+                icon: 'fas fa-balance-scale',
+                category: 'Financial Tools',
+                tier: 'standard',
+                url: 'https://muhmmadasadullah.github.io/amazon-balanced-spend-calculator/',
+                users: 2,
+                lastAccess: '6 hours ago',
+                status: 'active'
+            },
+            'acos_forecaster_v1': {
+                name: 'ACoS Forecaster 1.0',
+                description: 'Forecast ACoS impact from CPC and CVR changes',
+                icon: 'fas fa-crystal-ball',
+                category: 'Analytics Tools',
+                tier: 'standard',
+                url: 'https://muhmmadasadullah.github.io/acos-forecaster/1.0/',
+                users: 2,
+                lastAccess: '8 hours ago',
+                status: 'active'
+            }
+        };
+
+        function authenticateBusiness() {
+            const password = document.getElementById('businessPassword').value;
+            
+            if (password === BUSINESS_PASSWORD || Object.values(UNIVERSAL_CREDENTIALS).includes(password)) {
+                isAuthenticated = true;
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                initializeDashboard();
+            } else {
+                alert('Invalid business access code. Please try again.');
+            }
+        }
+
+        function initializeDashboard() {
+            updateLastLoginTime();
+            populateBusinessTools();
+            updateUserCount();
+        }
+
+        function updateLastLoginTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            document.getElementById('lastLoginTime').textContent = timeString;
+        }
+
+        function populateBusinessTools() {
+            const grid = document.getElementById('businessToolsGrid');
+            grid.innerHTML = '';
+
+            Object.keys(BUSINESS_TOOLS).forEach(toolId => {
+                const tool = BUSINESS_TOOLS[toolId];
+                
+                const toolCard = document.createElement('div');
+                toolCard.className = `business-card tool-card p-6 ${tool.tier === 'premium' ? 'premium' : ''}`;
+                
+                const tierBadgeClass = tool.tier === 'premium' ? 'badge-premium' : 'badge-standard';
+                const statusBadgeClass = tool.status === 'active' ? 'badge-active' : 'badge-standard';
+                
+                toolCard.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-3 bg-blue-50 rounded-lg">
+                                <i class="${tool.icon} text-xl text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">${tool.name}</h3>
+                                <p class="text-sm text-gray-600">${tool.category}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="professional-badge ${tierBadgeClass}">
+                                ${tool.tier.toUpperCase()}
+                            </div>
+                            <div class="professional-badge ${statusBadgeClass}">
+                                ${tool.status.toUpperCase()}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 mb-4">${tool.description}</p>
+                    
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span><i class="fas fa-users mr-1"></i>${tool.users} users</span>
+                        <span><i class="fas fa-clock mr-1"></i>${tool.lastAccess}</span>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button onclick="manageTool('${toolId}')" class="action-button secondary flex-1">
+                            <i class="fas fa-cog mr-1"></i>Manage
+                        </button>
+                        <button onclick="launchTool('${toolId}')" class="action-button flex-1">
+                            <i class="fas fa-external-link-alt mr-1"></i>Launch
+                        </button>
+                    </div>
+                `;
+                
+                grid.appendChild(toolCard);
+            });
+        }
+
+        function switchTab(tabName) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.nav-tab').classList.add('active');
+            
+            // Update content sections
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            
+            currentTab = tabName;
+        }
+
+        function updateUserCount() {
+            // Calculate unique users across all tools
+            const uniqueUsers = new Set();
+            Object.values(BUSINESS_TOOLS).forEach(tool => {
+                // Add tool users to set (this would be actual user data in production)
+                uniqueUsers.add('hellomasadullah@gmail.com');
+                uniqueUsers.add('asadullah@amzonestep.com');
+            });
+            document.getElementById('totalUsers').textContent = uniqueUsers.size;
+        }
+
+        function manageTool(toolId) {
+            alert(`Opening management panel for ${BUSINESS_TOOLS[toolId].name}`);
+            // This would open a management interface
+        }
+
+        function launchTool(toolId) {
+            const tool = BUSINESS_TOOLS[toolId];
+            
+            // Store universal login data for seamless access
+            const loginData = {
+                email: 'master@amzontools.com',
+                password: UNIVERSAL_CREDENTIALS['master@amzontools.com'],
+                name: 'Master Admin',
+                role: 'Master',
+                timestamp: Date.now()
+            };
+            
+            // Store auto-login data
+            sessionStorage.setItem('autoLogin_v1', JSON.stringify(loginData));
+            sessionStorage.setItem('autoLogin_v2', JSON.stringify(loginData));
+            
+            // Open tool in new tab
+            window.open(tool.url, '_blank');
+        }
+
+        // Handle Enter key for authentication
+        document.getElementById('businessPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                authenticateBusiness();
+            }
+        });
+
+        // Auto-focus on password field
+        window.addEventListener('load', function() {
+            document.getElementById('businessPassword').focus();
+        });
+    </script>
+</body>
+</html>
