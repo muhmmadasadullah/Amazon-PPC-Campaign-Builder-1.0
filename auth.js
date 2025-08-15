@@ -153,22 +153,40 @@ class AuthManager {
     createUserInfoComponent() {
         if (!this.isAuthenticated()) return '';
 
+        // Get first name only for compact display
+        const firstName = this.currentUser.name.split(' ')[0];
+
         return `
-            <div id="userInfo" class="flex items-center space-x-3 bg-white bg-opacity-20 rounded-lg px-4 py-2">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-white"></i>
+            <div class="relative">
+                <div id="userInfo" class="flex items-center space-x-2 bg-white bg-opacity-15 rounded-full px-3 py-2 backdrop-blur-sm cursor-pointer hover:bg-opacity-20 transition-all duration-200" onclick="toggleUserDropdown()">
+                    <div class="w-7 h-7 bg-white bg-opacity-25 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-xs"></i>
                     </div>
-                    <div class="text-white">
-                        <div id="userNameDisplay" class="text-sm font-medium">${this.currentUser.name}</div>
-                        <div id="userEmailDisplay" class="text-xs opacity-75">${this.currentUser.email}</div>
+                    <div class="text-white hidden sm:block">
+                        <div id="userNameDisplay" class="text-sm font-medium">${firstName}</div>
                     </div>
+                    <i class="fas fa-chevron-down text-white text-xs opacity-75"></i>
                 </div>
-                <div class="border-l border-white border-opacity-30 pl-3">
-                    <button id="signOutBtn" class="text-white hover:text-red-200 transition-colors flex items-center space-x-1 text-sm" title="Sign Out">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span class="hidden sm:inline">Sign Out</span>
-                    </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="userDropdown" class="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50 opacity-0 invisible transform scale-95 transition-all duration-200">
+                    <div class="p-4 border-b border-gray-100">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">${this.currentUser.name}</div>
+                                <div class="text-sm text-gray-500">${this.currentUser.email}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <button id="signOutBtn" class="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Sign Out</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -187,6 +205,35 @@ class AuthManager {
 
 // Create global authentication manager instance
 window.authManager = new AuthManager();
+
+// Global function for dropdown toggle
+window.toggleUserDropdown = function() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        const isVisible = dropdown.classList.contains('opacity-100');
+        
+        if (isVisible) {
+            // Hide dropdown
+            dropdown.classList.remove('opacity-100', 'visible', 'scale-100');
+            dropdown.classList.add('opacity-0', 'invisible', 'scale-95');
+        } else {
+            // Show dropdown
+            dropdown.classList.remove('opacity-0', 'invisible', 'scale-95');
+            dropdown.classList.add('opacity-100', 'visible', 'scale-100');
+        }
+    }
+};
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const userInfo = document.getElementById('userInfo');
+    const dropdown = document.getElementById('userDropdown');
+    
+    if (userInfo && dropdown && !userInfo.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('opacity-100', 'visible', 'scale-100');
+        dropdown.classList.add('opacity-0', 'invisible', 'scale-95');
+    }
+});
 
 // Export for module usage
 if (typeof module !== 'undefined' && module.exports) {
