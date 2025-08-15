@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test - Amazon PPC Campaign Builder</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+            <i class="fas fa-shield-alt mr-3 text-blue-600"></i>
+            Authentication Test Page
+        </h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Sign-in Page Card -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-sign-in-alt mr-2 text-blue-500"></i>
+                    Sign-in Page
+                </h2>
+                <p class="text-gray-600 mb-4">
+                    Professional sign-in page with secure authentication and modern design.
+                </p>
+                <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                    <h3 class="font-semibold text-blue-800 mb-2">Authorized Access:</h3>
+                    <p class="text-sm text-blue-700">
+                        Sign in with your authorized credentials to access the campaign builder.
+                    </p>
+                </div>
+                <a href="signin.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                    <i class="fas fa-external-link-alt mr-2"></i>
+                    Go to Sign-in Page
+                </a>
+            </div>
+            
+            <!-- Main Application Card -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                    <i class="fas fa-chart-line mr-2 text-green-500"></i>
+                    Main Application
+                </h2>
+                <p class="text-gray-600 mb-4">
+                    Protected main application that requires authentication to access.
+                </p>
+                <div class="bg-yellow-50 p-4 rounded-lg mb-4">
+                    <h3 class="font-semibold text-yellow-800 mb-2">
+                        <i class="fas fa-lock mr-1"></i>
+                        Protected Content
+                    </h3>
+                    <p class="text-sm text-yellow-700">
+                        Will redirect to sign-in page if not authenticated.
+                    </p>
+                </div>
+                <a href="index.html" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                    <i class="fas fa-external-link-alt mr-2"></i>
+                    Go to Main App
+                </a>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                <i class="fas fa-star mr-2 text-purple-500"></i>
+                Authentication Features
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center p-4">
+                    <i class="fas fa-shield-check text-3xl text-blue-500 mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">Secure Authentication</h3>
+                    <p class="text-sm text-gray-600">Session-based authentication with secure storage</p>
+                </div>
+                <div class="text-center p-4">
+                    <i class="fas fa-mobile-alt text-3xl text-green-500 mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">Responsive Design</h3>
+                    <p class="text-sm text-gray-600">Mobile-friendly interface with modern UI</p>
+                </div>
+                <div class="text-center p-4">
+                    <i class="fas fa-sync-alt text-3xl text-purple-500 mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">Multi-tab Sync</h3>
+                    <p class="text-sm text-gray-600">Synchronized sessions across multiple browser tabs</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 mt-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                Testing Instructions
+            </h2>
+            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                <li>Click "Go to Sign-in Page" to access the authentication interface</li>
+                <li>Enter your authorized email and password credentials</li>
+                <li>Submit the form to authenticate</li>
+                <li>You'll be redirected to the main Amazon PPC Campaign Builder</li>
+                <li>Notice the user info displayed in the header</li>
+                <li>Try opening the main app directly - it will redirect to sign-in if not authenticated</li>
+                <li>Test the "Remember me" option for persistent sessions</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
