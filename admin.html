@@ -57,7 +57,7 @@
                 <i class="fas fa-cog text-white text-2xl"></i>
             </div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Admin Panel</h1>
-            <p class="text-gray-600">Manage user credentials and system settings</p>
+            <p class="text-gray-600">Manage users and passwords for Amazon PPC Campaign Builder</p>
         </div>
 
         <!-- Admin Authentication -->
@@ -139,34 +139,52 @@
                 </div>
             </div>
 
-            <!-- Generated Code Section -->
+            <!-- How to Apply Changes -->
             <div class="mb-8">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-code mr-2 text-orange-500"></i>
-                    Generated Credentials Code
+                    <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                    How to Apply Changes
                 </h2>
                 
-                <div class="bg-gray-900 rounded-lg p-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-green-400 font-mono text-sm">credentials.js</span>
-                        <button onclick="copyCredentialsCode()" class="text-blue-400 hover:text-blue-300 text-sm">
-                            <i class="fas fa-copy mr-1"></i>Copy Code
-                        </button>
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                                <i class="fas fa-edit mr-2"></i>
+                                Method 1: Direct File Edit
+                            </h4>
+                            <ol class="text-sm text-blue-700 space-y-2">
+                                <li class="flex items-start">
+                                    <span class="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">1</span>
+                                    Open <code class="bg-blue-100 px-1 rounded text-xs">credentials.js</code> file
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">2</span>
+                                    Edit the password values directly
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">3</span>
+                                    Save file and refresh browser
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-purple-800 mb-3 flex items-center">
+                                <i class="fas fa-sync-alt mr-2"></i>
+                                Method 2: Restart Required
+                            </h4>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                <p class="text-sm text-yellow-800 mb-2">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    <strong>Important:</strong>
+                                </p>
+                                <p class="text-xs text-yellow-700">
+                                    Changes made in this admin panel are temporary. To make them permanent, you need to update the actual <code>credentials.js</code> file on the server.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <pre id="credentialsCode" class="text-green-400 font-mono text-sm overflow-x-auto"></pre>
-                </div>
-                
-                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 class="font-semibold text-blue-800 mb-2">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        How to Apply Changes
-                    </h4>
-                    <ol class="text-sm text-blue-700 space-y-1">
-                        <li>1. Copy the generated code above</li>
-                        <li>2. Replace the content in <code class="bg-blue-100 px-1 rounded">credentials.js</code> file</li>
-                        <li>3. Save the file</li>
-                        <li>4. Refresh the application</li>
-                    </ol>
                 </div>
             </div>
 
@@ -227,7 +245,6 @@
                 document.getElementById('adminContent').classList.remove('hidden');
                 populateUsersList();
                 populateUserSelect();
-                generateCredentialsCode();
                 showStatus('success', 'Admin authentication successful!');
             } else {
                 showStatus('error', 'Invalid admin password. Please try again.');
@@ -291,8 +308,7 @@
             }
 
             currentCredentials[email] = newPassword;
-            generateCredentialsCode();
-            showStatus('success', `Password updated for ${email}. Copy the generated code to apply changes.`);
+            showStatus('success', `Password updated for ${email}. Edit credentials.js file to apply changes permanently.`);
             
             // Clear form
             document.getElementById('userSelect').value = '';
@@ -335,8 +351,7 @@
 
             populateUsersList();
             populateUserSelect();
-            generateCredentialsCode();
-            showStatus('success', `New user ${name} added successfully. Copy the generated code to apply changes.`);
+            showStatus('success', `New user ${name} added successfully. Edit credentials.js file to apply changes permanently.`);
 
             // Clear form
             document.getElementById('newUserEmail').value = '';
@@ -351,50 +366,11 @@
                 
                 populateUsersList();
                 populateUserSelect();
-                generateCredentialsCode();
-                showStatus('success', `User ${email} removed successfully. Copy the generated code to apply changes.`);
+                showStatus('success', `User ${email} removed successfully. Edit credentials.js file to apply changes permanently.`);
             }
         }
 
-        function generateCredentialsCode() {
-            const credentialsCode = `/**
- * User Credentials Configuration
- * 
- * Generated on: ${new Date().toLocaleString()}
- * 
- * TO UPDATE PASSWORDS:
- * 1. Replace the content in credentials.js with this code
- * 2. Save the file
- * 3. Refresh the application
- */
 
-const USER_CREDENTIALS = ${JSON.stringify(currentCredentials, null, 4)};
-
-const USER_SETTINGS = ${JSON.stringify(currentSettings, null, 4)};
-
-// Export for use in other files
-if (typeof window !== 'undefined') {
-    window.USER_CREDENTIALS = USER_CREDENTIALS;
-    window.USER_SETTINGS = USER_SETTINGS;
-}
-
-// For Node.js environments
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        USER_CREDENTIALS,
-        USER_SETTINGS
-    };
-}`;
-
-            document.getElementById('credentialsCode').textContent = credentialsCode;
-        }
-
-        function copyCredentialsCode() {
-            const code = document.getElementById('credentialsCode').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                showStatus('success', 'Credentials code copied to clipboard!');
-            });
-        }
 
         function showStatus(type, message) {
             const statusDiv = document.getElementById('statusMessage');
