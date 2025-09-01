@@ -886,7 +886,8 @@
                                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                                 <option value="Dynamic bids - down only" ${config.biddingStrategy === 'Dynamic bids - down only' ? 'selected' : ''}>Dynamic bids - down only</option>
                                 <option value="Dynamic bids - up and down" ${config.biddingStrategy === 'Dynamic bids - up and down' ? 'selected' : ''}>Dynamic bids - up and down</option>
-                                <option value="Fixed bids" ${config.biddingStrategy === 'Fixed bids' ? 'selected' : ''}>Fixed bids</option>
+                                <!-- Use singular form "Fixed bid" to match Amazon bulksheet requirements -->
+                                <option value="Fixed bid" ${config.biddingStrategy === 'Fixed bid' ? 'selected' : ''}>Fixed bid</option>
                             </select>
                         </div>
                     </div>
@@ -1200,10 +1201,12 @@
                 const targetingType = isAuto ? 'auto' : 'manual';
                 
                 // Campaign entity
+                // Use canonical bidding strategy: replace any legacy "Fixed bids" with "Fixed bid"
+                const canonicalBidStrategy = config.biddingStrategy === 'Fixed bids' ? 'Fixed bid' : config.biddingStrategy;
                 worksheetData.push([
                     'Sponsored Products', 'Campaign', 'Create', campaignName, '', '', '', '', '', campaignName, '',
                     new Date().toISOString().slice(0, 10).replace(/-/g, ''), '', targetingType, 'enabled',
-                    config.budget, '', '', '', '', '', '', config.biddingStrategy, '', '', ''
+                    config.budget, '', '', '', '', '', '', canonicalBidStrategy, '', '', ''
                 ]);
                 
                 // Placement modifiers
