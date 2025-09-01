@@ -1414,23 +1414,22 @@
     
     <!-- Authentication Initialization -->
     <script>
-        // Initialize authentication when DOM is loaded
+        // Initialize application (authentication disabled for public access)
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the main application with authentication
+            // Initialize the main application without authentication requirements
             if (window.authManager) {
+                // Always initialize successfully for public access
                 const authSuccess = window.authManager.initMainApp();
                 
-                if (authSuccess) {
-                    // Add user info to header
-                    const userInfoContainer = document.getElementById('userInfoContainer');
-                    if (userInfoContainer && window.authManager.isAuthenticated()) {
-                        userInfoContainer.innerHTML = window.authManager.createUserInfoComponent();
-                        window.authManager.updateUI();
-                    }
-                    
-                    // Add welcome message
-                    console.log('Welcome back, ' + window.authManager.getCurrentUser().name + '!');
+                // Add user info to header (optional for public access)
+                const userInfoContainer = document.getElementById('userInfoContainer');
+                if (userInfoContainer) {
+                    userInfoContainer.innerHTML = window.authManager.createUserInfoComponent();
+                    window.authManager.updateUI();
                 }
+                
+                // Add welcome message for public user
+                console.log('Welcome to Amazon PPC Campaign Builder - Public Access Mode!');
             }
         });
     </script>

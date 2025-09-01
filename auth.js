@@ -88,12 +88,20 @@ class AuthManager {
 
     // Check if user is authenticated
     isAuthenticated() {
-        return this.currentUser !== null;
+        // Always return true to bypass authentication
+        return true;
     }
 
     // Get current user information
     getCurrentUser() {
-        return this.currentUser;
+        // Return default user for public access
+        return this.currentUser || {
+            email: 'public@user.com',
+            name: 'Public User',
+            role: 'User',
+            loginTime: new Date().toISOString(),
+            rememberMe: false
+        };
     }
 
     // Perform auto-login with universal credentials
@@ -126,15 +134,7 @@ class AuthManager {
 
     // Redirect to sign-in page if not authenticated
     requireAuth() {
-        if (!this.isAuthenticated()) {
-            // Save current page for redirect after login
-            const currentPath = window.location.pathname;
-            if (currentPath !== '/signin.html') {
-                sessionStorage.setItem('ppcBuilder_redirectAfterLogin', currentPath);
-            }
-            window.location.href = 'signin.html';
-            return false;
-        }
+        // Authentication disabled - always return true to allow public access
         return true;
     }
 
@@ -187,11 +187,12 @@ class AuthManager {
 
         if (this.isAuthenticated() && userInfo) {
             userInfo.style.display = 'flex';
+            const user = this.getCurrentUser();
             if (userNameDisplay) {
-                userNameDisplay.textContent = this.currentUser.name || 'User';
+                userNameDisplay.textContent = user.name || 'User';
             }
             if (userEmailDisplay) {
-                userEmailDisplay.textContent = this.currentUser.email || '';
+                userEmailDisplay.textContent = user.email || '';
             }
         }
 
@@ -202,10 +203,11 @@ class AuthManager {
 
     // Create user info UI component
     createUserInfoComponent() {
-        if (!this.isAuthenticated()) return '';
-
+        // Always show user info for public access
+        const user = this.getCurrentUser();
+        
         // Get first name only for compact display
-        const firstName = this.currentUser.name.split(' ')[0];
+        const firstName = user.name.split(' ')[0];
 
         return `
             <div class="relative">
@@ -227,8 +229,8 @@ class AuthManager {
                                 <i class="fas fa-user text-white"></i>
                             </div>
                             <div>
-                                <div class="font-medium text-gray-800">${this.currentUser.name}</div>
-                                <div class="text-sm text-gray-500">${this.currentUser.email}</div>
+                                <div class="font-medium text-gray-800">${user.name}</div>
+                                <div class="text-sm text-gray-500">${user.email}</div>
                             </div>
                         </div>
                     </div>
@@ -249,11 +251,7 @@ class AuthManager {
 
     // Initialize authentication for the main application
     initMainApp() {
-        // Require authentication
-        if (!this.requireAuth()) {
-            return false;
-        }
-
+        // Authentication disabled - always return true for public access
         return true;
     }
 }
